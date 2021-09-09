@@ -48,6 +48,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetStreamPublishVsCorePubli
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetStreamPublishWithOptionsUseCases", "Samples\JetStreamPublishWithOptionsUseCases\JetStreamPublishWithOptionsUseCases.csproj", "{A935E4D3-142C-4BBB-BD85-C8A475E7D747}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetStreamPushSubQueueDurable", "Samples\JetStreamPushSubQueueDurable\JetStreamPushSubQueueDurable.csproj", "{CFDE059B-7AE4-45DA-9DCB-5247171D0BE2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -122,6 +124,10 @@ Global
 		{A935E4D3-142C-4BBB-BD85-C8A475E7D747}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A935E4D3-142C-4BBB-BD85-C8A475E7D747}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A935E4D3-142C-4BBB-BD85-C8A475E7D747}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFDE059B-7AE4-45DA-9DCB-5247171D0BE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFDE059B-7AE4-45DA-9DCB-5247171D0BE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFDE059B-7AE4-45DA-9DCB-5247171D0BE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFDE059B-7AE4-45DA-9DCB-5247171D0BE2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -143,6 +149,7 @@ Global
 		{A888C56E-721D-496A-91FE-EFF983650D77} = {776C2E80-958B-4C0D-BCC4-67D39DB4570B}
 		{257E7720-0AE3-49E3-AB13-EB84FF4D06FA} = {776C2E80-958B-4C0D-BCC4-67D39DB4570B}
 		{A935E4D3-142C-4BBB-BD85-C8A475E7D747} = {776C2E80-958B-4C0D-BCC4-67D39DB4570B}
+		{CFDE059B-7AE4-45DA-9DCB-5247171D0BE2} = {776C2E80-958B-4C0D-BCC4-67D39DB4570B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0972F03C-E4DF-483A-B767-9216F4434F11}

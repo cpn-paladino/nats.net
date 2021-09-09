@@ -347,7 +347,7 @@ namespace IntegrationTests
                 for (int id = 1; id <= 3; id++) {
                     // setup the subscription
                     IJetStreamPushSyncSubscription sub = js.PushSubscribeSync(SUBJECT, QUEUE, pso);
-                    // create and track the runnable
+                    // create and track the ThreadStart delegate
                     JsQueueSubscriber qs = new JsQueueSubscriber(100, js, sub, allReceived);
                     subscribers.Add(qs);
                     // create, track and start the thread

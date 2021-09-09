@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using NATS.Client.JetStream;
 
 namespace NATS.Client.Internals
@@ -40,6 +39,18 @@ namespace NATS.Client.Internals
                 "Durable is required and cannot contain a '.', '*' or '>' [null]");
         }
 
+        public static string ValidateJetStreamPrefix(String s) {
+            return ValidatePrintableExceptWildGtDollar(s, "Prefix", false);
+        }
+
+        public static string ValidateBucketNameRequired(String s) {
+            return ValidateKvBucketName(s, "Bucket name", true);
+        }
+
+        public static string ValidateKeyRequired(String s) {
+            return ValidateKvKey(s, "Key", true);
+        }
+
         internal static String ValidateMustMatchIfBothSupplied(String s1, String s2, String label1, String label2) {
             // s1   | s2   || result
             // ---- | ---- || --------------
@@ -74,21 +85,6 @@ namespace NATS.Client.Internals
             }
 
             return check.Invoke();
-        }
-
-        public static String ValidateJetStreamPrefix(String s) {
-            return ValidatePrintableExceptWildGtDollar(s, "Prefix", false);
-        }
-
-        public static string ValidateMaxLength(String s, int maxLength, bool required, String label) {
-            return Validate(s, required, label, () =>
-            {
-                int len = Encoding.UTF8.GetByteCount(s);
-                if (len > maxLength) {
-                    throw new ArgumentException($"{label} cannot be longer than {maxLength} bytes but was {len} bytes");
-                }
-                return s;
-            });
         }
 
         public static string ValidatePrintable(string s, String label, bool required)
@@ -126,6 +122,26 @@ namespace NATS.Client.Internals
             return Validate(s, required, label, () => {
                 if (NotPrintableOrHasWildGtDollar(s)) {
                     throw new ArgumentException($"{label} must be in the printable ASCII range and cannot include `*`, `>` or `$` [" + s + "]");
+                }
+                return s;
+            });
+        }
+
+        public static string ValidateKvBucketName(string s, string label, bool required)
+        {
+            return Validate(s, required, label, () => {
+                if (NotRestrictedTerm(s)) {
+                    throw new ArgumentException($"{label} must only contain A-Z, a-z, 0-9, `-` or `_`  [" + s + "]");
+                }
+                return s;
+            });
+        }
+
+        public static string ValidateKvKey(string s, string label, bool required)
+        {
+            return Validate(s, required, label, () => {
+                if (NotKvKey(s)) {
+                    throw new ArgumentException($"{label} must only contain A-Z, a-z, 0-9, `-`, `_`, `/`, `=` or `.` and cannot start with `.` [" + s + "]");
                 }
                 return s;
             });
@@ -284,16 +300,87 @@ namespace NATS.Client.Internals
             return false;
         }
 
-        private static bool NotPrintableOrHasWildGt(String s) {
+        public static bool NotPrintableOrHasWildGt(String s) {
             return NotPrintableOrHasChars(s, WildGt);
         }
 
-        private static bool NotPrintableOrHasWildGtDot(String s) {
+        public static bool NotPrintableOrHasWildGtDot(String s) {
             return NotPrintableOrHasChars(s, WildGtDot);
         }
 
-        private static bool NotPrintableOrHasWildGtDollar(String s) {
+        public static bool NotPrintableOrHasWildGtDollar(String s) {
             return NotPrintableOrHasChars(s, WildGtDollar);
+        }
+
+        // restricted-term  = (A-Z, a-z, 0-9, dash 45, underscore 95)+
+        public static bool NotRestrictedTerm(String s) {
+            for (int x = 0; x < s.Length; x++) {
+                char c = s[x];
+                if (c < '0') { // before 0
+                    if (c == '-') { // only dash is accepted
+                        continue;
+                    }
+                    return true; // "not"
+                }
+                if (c < ':') {
+                    continue; // means it's 0 - 9
+                }
+                if (c < 'A') {
+                    return true; // between 9 and A is "not restricted"
+                }
+                if (c < '[') {
+                    continue; // means it's A - Z
+                }
+                if (c < 'a') { // before a
+                    if (c == '_') { // only underscore is accepted
+                        continue;
+                    }
+                    return true; // "not"
+                }
+                if (c > 'z') { // 122 is z, characters after of them are "not restricted"
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // limited-term = (A-Z, a-z, 0-9, dash 45, underscore 95, fwd-slash 47, equals 61)+
+        // kv-key-name = limited-term (dot limited-term)*
+        public static bool NotKvKey(String s) {
+            if (s[0] == '.') {
+                return true; // can't start with dot
+            }
+            for (int x = 0; x < s.Length; x++) {
+                char c = s[x];
+                if (c < '0') { // before 0
+                    if (c == '-' || c == '.' || c == '/') { // only dash dot and and fwd slash are accepted
+                        continue;
+                    }
+                    return true; // "not"
+                }
+                if (c < ':') {
+                    continue; // means it's 0 - 9
+                }
+                if (c < 'A') {
+                    if (c == '=') { // equals is accepted
+                        continue;
+                    }
+                    return true; // between 9 and A is "not limited"
+                }
+                if (c < '[') {
+                    continue; // means it's A - Z
+                }
+                if (c < 'a') { // before a
+                    if (c == '_') { // only underscore is accepted
+                        continue;
+                    }
+                    return true; // "not"
+                }
+                if (c > 'z') { // 122 is z, characters after of them are "not limited"
+                    return true;
+                }
+            }
+            return false;
         }
 
         internal static string EmptyAsNull(string s)

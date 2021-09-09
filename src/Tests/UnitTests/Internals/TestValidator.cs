@@ -176,6 +176,47 @@ namespace UnitTests.Internals
         }
 
         [Fact]
+        public void TestValidateBucketNameRequired() {
+            Validator.ValidateBucketNameRequired(Plain);
+            Validator.ValidateBucketNameRequired(Plain.ToUpper());
+            Validator.ValidateBucketNameRequired(HasDash);
+            Validator.ValidateBucketNameRequired(HasUnder);
+            Validator.ValidateBucketNameRequired("numbers9ok");
+            Assert.Throws<ArgumentException>(() => Validator.ValidateBucketNameRequired(null));
+            Assert.Throws<ArgumentException>(() => Validator.ValidateBucketNameRequired(HasSpace));
+            Assert.Throws<ArgumentException>(() => Validator.ValidateBucketNameRequired(HasDot));
+            Assert.Throws<ArgumentException>(() => Validator.ValidateBucketNameRequired(HasStar));
+            Assert.Throws<ArgumentException>(() => Validator.ValidateBucketNameRequired(HasGt));
+            Assert.Throws<ArgumentException>(() => Validator.ValidateBucketNameRequired(HasDollar));
+            Assert.Throws<ArgumentException>(() => Validator.ValidateBucketNameRequired(HasLow));
+            Assert.Throws<ArgumentException>(() => Validator.ValidateBucketNameRequired(Has127));
+            Assert.Throws<ArgumentException>(() => Validator.ValidateBucketNameRequired(HasFwdSlash));
+            Assert.Throws<ArgumentException>(() => Validator.ValidateBucketNameRequired(HasEquals));
+            Assert.Throws<ArgumentException>(() => Validator.ValidateBucketNameRequired(HasTic));
+        }
+
+        [Fact]
+        public void TestValidateKeyRequired() {
+            Validator.ValidateKeyRequired(Plain);
+            Validator.ValidateKeyRequired(Plain.ToUpper());
+            Validator.ValidateKeyRequired(HasDash);
+            Validator.ValidateKeyRequired(HasUnder);
+            Validator.ValidateKeyRequired(HasFwdSlash);
+            Validator.ValidateKeyRequired(HasEquals);
+            Validator.ValidateKeyRequired(HasDot);
+            Validator.ValidateKeyRequired("numbers9ok");
+            Assert.Throws<ArgumentException>(() => Validator.ValidateKeyRequired(null));
+            Assert.Throws<ArgumentException>(() => Validator.ValidateKeyRequired(HasSpace));
+            Assert.Throws<ArgumentException>(() => Validator.ValidateKeyRequired(HasStar));
+            Assert.Throws<ArgumentException>(() => Validator.ValidateKeyRequired(HasGt));
+            Assert.Throws<ArgumentException>(() => Validator.ValidateKeyRequired(HasDollar));
+            Assert.Throws<ArgumentException>(() => Validator.ValidateKeyRequired(HasLow));
+            Assert.Throws<ArgumentException>(() => Validator.ValidateKeyRequired(Has127));
+            Assert.Throws<ArgumentException>(() => Validator.ValidateKeyRequired(HasTic));
+            Assert.Throws<ArgumentException>(() => Validator.ValidateKeyRequired(".starts.with.dot.not.allowed"));
+        }
+
+        [Fact]
         public void TestValidateMustMatchIfBothSupplied()
         {
             Assert.Null(Validator.ValidateMustMatchIfBothSupplied(null, null, "", ""));
